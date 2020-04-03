@@ -105,8 +105,161 @@
 </template>
 
 <script>
+/* eslint-disable no-unused-vars */
+// Visibility filters :
+let filters = {
+  all: function(todos) {
+    return todos;
+  },
+  active: function(todos) {
+    return todos.filter(function(todo) {
+      return !todo.completed;
+    });
+  },
+  completed: function(todos) {
+    return todos.filter(function(todo) {
+      return todo.completed;
+    });
+  }
+};
+
+// app Vue instance :
 export default {
-  name: "todos"
+  name: "Todos",
+  props: {
+    activeUser: Object
+  },
+
+  // DATA : app Initial State :
+  data: () => {
+    return {
+      todos: [],
+      newTodo: "",
+      editedTodo: null,
+      visibility: "all",
+      loading: true,
+      error: null
+    };
+  },
+
+  // LIFE-CYCLE Hooks :
+  mounted() {
+    // Inject some startup data
+    this.todo = [
+      { title: "Drink Coffee", completed: false },
+      { title: "Write REST API", completed: false },
+      { title: "Finish Vue + Spring-Boot App", completed: false }
+    ];
+
+    // hide the loading message :
+    this.loading = false;
+  },
+
+  // COMPUTED Poperties :
+  computed: {
+    filteredTodos: function() {
+      return filters[this.visibility](this.todos);
+    },
+    remaining: function() {
+      return filters.active(this.todos).length;
+    },
+    allDone: {
+      get: function() {
+        return this.remaining === 0;
+      },
+      set: function(value) {
+        this.todos.forEach(todo => {
+          todo.completed = value;
+        });
+      },
+      userEmail: function() {
+        return this.activeUser ? this.activeUser.email : "";
+      },
+      inputPlaceholder: function() {
+        return this.activeUser
+          ? this.activeUser.given_name + ", what needs to be done?"
+          : "What needs to be done?";
+      }
+    },
+
+    //-- pularlize :
+    filters: {
+      pluralize: function(n) {
+        return n === 1 ? "item" : "items";
+      }
+    }
+  },
+
+  // METHODS :  Implement Data Logic : (No DOM Manipulation here)
+  methods: {
+    addTodo: function() {
+      let value = this.newTodo && this.newTodo.trim();
+      if (!value) {
+        return;
+      }
+
+      this.todo.push({
+        title: value,
+        completed: false
+      });
+
+      this.newTodo = "";
+    },
+
+    setVisibility: function(vis) {
+      this.visibility = vis;
+    },
+
+    competeTodo(todo) {
+      // return todo.completed = true;
+    },
+
+    removeTodo: function(todo) {
+      this.todo.splice(this.todos.indexOf(todo), 1);
+    },
+
+    editTodo: function(todo) {
+      this.beforeEditCache = todo.title;
+      this.editedTodo = todo;
+    },
+
+    doneEdit: function(todo) {
+      if (!this.editedTodo) {
+        return;
+      }
+
+      this.editedTodo = null;
+      todo.title = todo.title.trim();
+
+      if (!todo.title) {
+        this.removeTodo(todo);
+      }
+    },
+
+    cancelEdit: function(todo) {
+      this.editedTodo = null;
+      todo.title = this.beforeEditCache;
+    },
+
+    removeCompleted: function() {
+      this.todos = filters.active(this.todos);
+    },
+
+    handleErrorClick: function() {
+      this.error = null;
+    }
+  },
+
+  // Custom Diretives to wait for the DOM to be updated
+  // before focusing on the input field.
+  // See 'custom-directives.html Vue.js webiste
+  directives: {
+    "todo-focus": function(el, binding) {
+      if (binding.value) {
+        el.focus();
+      }
+    }
+  }
 };
 </script>
 
