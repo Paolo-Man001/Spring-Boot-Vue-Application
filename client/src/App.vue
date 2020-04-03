@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Todos />
+    <app-todos />
     <footer class="info">
       <p>Based on a project written by <a href="#">Evan You</a></p>
       <p>Original Vue TodoApp project is <a href="#">here</a></p>
@@ -16,7 +16,7 @@ export default {
   name: "App",
   components: {
     // eslint-disable-next-line vue/no-unused-components
-    Todos
+    appTodos: Todos
   },
   data: () => {
     return {};

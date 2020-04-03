@@ -145,7 +145,7 @@ export default {
   // LIFE-CYCLE Hooks :
   mounted() {
     // Inject some startup data
-    this.todo = [
+    this.todos = [
       { title: "Drink Coffee", completed: false },
       { title: "Write REST API", completed: false },
       { title: "Finish Vue + Spring-Boot App", completed: false }
@@ -182,7 +182,7 @@ export default {
       }
     },
 
-    //-- pularlize :
+    //-- Pluralize :
     filters: {
       pluralize: function(n) {
         return n === 1 ? "item" : "items";
